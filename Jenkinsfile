@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "shivam86200/eventportal"
+        IMAGE_NAME = "YOUR_DOCKERHUB_USERNAME/eventportal"
     }
 
     stages {
@@ -16,19 +16,19 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo 'Building Project'
+                bat 'echo Building Project'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running Tests'
+                bat 'echo Running Tests'
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:v1 .'
+                bat 'docker build -t %IMAGE_NAME%:v1 .'
             }
         }
 
@@ -40,9 +40,9 @@ pipeline {
                     passwordVariable: 'PASSWORD'
                 )]) {
 
-                    sh '''
-                    echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                    docker push $IMAGE_NAME:v1
+                    bat '''
+                    echo %PASSWORD% | docker login -u %USERNAME% --password-stdin
+                    docker push %IMAGE_NAME%:v1
                     '''
                 }
             }
@@ -50,16 +50,17 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'kubectl apply -f k8s/'
+                bat 'kubectl apply -f k8s'
             }
         }
 
         stage('Verify') {
             steps {
-                sh 'kubectl get pods'
-                sh 'kubectl get svc'
+                bat 'kubectl get pods'
+                bat 'kubectl get svc'
             }
         }
 
     }
+
 }
