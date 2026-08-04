@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "YOUR_DOCKERHUB_USERNAME/eventportal"
+        IMAGE_NAME = "YOUR_DOCKERHUB_USERNAME/smart-event-portal"
     }
 
     stages {
