@@ -2,15 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: smart-event-portal
-  labels:
-    app: smart-event-portal
+  namespace: smart-event
 spec:
   replicas: 3
+  revisionHistoryLimit: 5
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
       maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: smart-event-portal
@@ -20,17 +20,20 @@ spec:
         app: smart-event-portal
     spec:
       containers:
-        - name: smart-event-portal
-          image: stuxnet12/smart-event-portal:v3
+        - name: portal
+          image: stuxnet12/smart-event:v4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
           env:
             - name: PORT
-              value: "3000"
+              valueFrom:
+                configMapKeyRef:
+                  name: smart-event-config
+                  key: PORT
           readinessProbe:
             httpGet:
-              path: /
+              path: /api/health
               port: 3000
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -39,4 +42,4 @@ spec:
               path: /api/health
               port: 3000
             initialDelaySeconds: 10
-            periodSeconds: 15
+            periodSeconds: 20

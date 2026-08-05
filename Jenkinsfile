@@ -1,66 +1,47 @@
 pipeline {
+  agent any
 
-    agent any
+  environment {
+    IMAGE_NAME = 'smart-event-management-portal'
+    IMAGE_TAG = "${BUILD_NUMBER}"
+  }
 
-    environment {
-        IMAGE_NAME = "YOUR_DOCKERHUB_USERNAME/smart-event-portal"
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
     }
 
-    stages {
-
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Build') {
-            steps {
-                bat 'echo Building Project'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                bat 'echo Running Tests'
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                bat 'docker build -t %IMAGE_NAME%:v1 .'
-            }
-        }
-
-        stage('Docker Push') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'USERNAME',
-                    passwordVariable: 'PASSWORD'
-                )]) {
-
-                    bat '''
-                    echo %PASSWORD% | docker login -u %USERNAME% --password-stdin
-                    docker push %IMAGE_NAME%:v1
-                    '''
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                bat 'kubectl apply -f k8s'
-            }
-        }
-
-        stage('Verify') {
-            steps {
-                bat 'kubectl get pods'
-                bat 'kubectl get svc'
-            }
-        }
-
+    stage('Test') {
+      steps {
+        sh 'node --test'
+      }
     }
 
+    stage('Build Image') {
+      steps {
+        sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+      }
+    }
+
+    stage('Deploy to Kubernetes') {
+      steps {
+        sh 'kubectl apply -f k8s/namespace.yaml'
+        sh 'kubectl apply -f k8s/configmap.yaml'
+        sh 'kubectl apply -f k8s/deployment.yaml'
+        sh 'kubectl apply -f k8s/service.yaml'
+        sh 'kubectl apply -f k8s/hpa.yaml'
+      }
+    }
+  }
+
+  post {
+    success {
+      echo 'Smart Event Management Portal deployed successfully.'
+    }
+    failure {
+      echo 'Pipeline failed. Check build logs for details.'
+    }
+  }
 }

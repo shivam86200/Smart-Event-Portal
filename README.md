@@ -1,62 +1,53 @@
 # Smart Event Management Portal
 
-Static Node.js website for the capstone project. The page presents the Smart Event Management Portal story, the CI/CD architecture, the delivery phases, the technology stack, the innovation ideas, and the submission checklist in one responsive interface.
+A polished demo web application for the CI/CD assignment on Docker, Kubernetes, Jenkins, and GitHub.
 
-## Files
+## Features
 
-- `index.html` - main landing page
-- `styles.css` - visual design and responsive layout
-- `script.js` - lightweight interactions such as navigation highlighting and tab switching
-- `server.js` - Node.js backend that serves the site and exposes basic API routes
-- `package.json` - project metadata and start script
+- User registration and login
+- Dedicated login and register pages
+- Browse upcoming events
+- Book tickets
+- View booking history
+- Admin create, update, and delete event management flow
+- Dockerized runtime
+- Kubernetes manifests for rolling updates and scaling
+- Jenkins pipeline for test, build, and deploy automation
 
-## Website Goals
+## Run locally
 
-- Present the project scenario clearly
-- Show the technology stack with Node.js as the backend choice
-- Summarize the Docker, Kubernetes, and Jenkins phases without running any DevOps commands
-- Show the required deliverables and innovation ideas
-- Provide a polished presentation page for demo day or submission
+```bash
+npm install
+npm start
+```
 
-## Jenkins Setup
+Open `http://localhost:3000`.
 
-- Create a Pipeline job named `Smart-Event-Portal`
-- Choose `Pipeline script from SCM`
-- Set SCM to `Git`
-- Use the repository URL `https://github.com/shivam86200/Smart-Event-Portal.git`
-- Set the branch to `*/main`
-- Set the script path to `Jenkinsfile`
-- Add credentials with IDs `github-creds` and `dockerhub-creds`
-- Enable the GitHub webhook trigger for automatic builds on push
+Dedicated auth pages:
 
-## Pipeline Stages
+- `http://localhost:3000/login.html`
+- `http://localhost:3000/register.html`
 
-Checkout, Build, Test, Docker Build, Docker Push, Deploy, and Verify.
+## Demo credentials
 
-## Jenkins Demo Points
+- Admin: `admin@smartevent.local` / `Admin@123`
+- User: `member@smartevent.local` / `Member@123`
 
-- Webhook trigger from GitHub starts the pipeline automatically
-- Docker image is built and pushed to Docker Hub without manual intervention
-- Kubernetes deployment is updated and verified with rollout status
-- If deployment fails, the pipeline rolls the deployment back automatically
+## Docker
 
-## Final Demonstration
+```bash
+docker build -t smart-event-management-portal .
+docker run -p 3000:3000 smart-event-management-portal
+```
 
-- Container running
-- Docker Hub image
-- Pods
-- Services
-- Replica scaling
-- Rolling update
-- Rollback
-- Jenkins build and pipeline success
-- Application running
+## Kubernetes
 
-## Notes
+Apply the manifests in the `k8s` folder after building and pushing your image.
 
-- The Jenkinsfile uses the Docker Hub image name `stuxnet12/smart-event-portal`.
-- If you use a different Docker Hub account, update the `IMAGE_NAME` value in [Jenkinsfile](Jenkinsfile).
+## Jenkins pipeline
 
-## Opening the Site
+The `Jenkinsfile` runs the test step, builds the image, and applies the Kubernetes manifests.
 
-Run the Node.js server with `npm install` followed by `npm start`, then open `http://localhost:3000`.
+## Author
+
+Shivam Singh
